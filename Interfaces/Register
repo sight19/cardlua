@@ -1,0 +1,90 @@
+-- Somewhere, somehow, I deleted my previous file. So here I am, writing exactly the same
+-- code as half an hour ago. Fuck my life.
+
+-- To communicate with the server, I use the following server ID's:
+-- register, registerReturn, protocol "tomain"
+
+-- Part 1, section 1: making the GUI
+
+term.clear()
+term.setCursorPos(1,1)
+print("--==--==--==--==--==--==--")
+print("         REGISTER         ")
+print("  >Username:              ")
+print("   Password:              ")
+print("   Confirm :              ")
+
+-- Part 1, section 2: enabling user interaction
+
+term.setCursorPos(14,3)
+local username = read()
+
+local passCorrect = false
+while not passCorrect do
+	term.clear()
+	term.setCursorPos(1,1)
+	print("--==--==--==--==--==--==--")
+	print("         REGISTER         ")
+	print("   Username: " ..username)
+	print("  >Password:              ")
+	print("   Confirm :              ")
+	term.setCursorPos(14,4)
+	local password = read("*")
+
+	term.clear()
+	term.setCursorPos(1,1)
+	local passLength = string.len(password)
+	local passPlaceHolder = string.rep("*", passLength)
+	print("--==--==--==--==--==--==--")
+	print("         REGISTER         ")
+	print("   Username: " ..username)
+	print("   Password: " ..passPlaceHolder)
+	print("  >Confirm :              ")
+	term.setCursorPos(14,5)
+	local passConfirm = read("*")
+	if passConfirm == password then
+		passCorrect = true
+	else
+		print("Please check your password")
+		sleep(1)
+	end
+end
+
+term.clear()
+term.setCursorPos(1,1)
+print("--==--==--==--==--==--==--")
+print("         REGISTER         ")
+print("  Please enter your code  ")
+print("  >Code    :              ")
+term.setCursorPos(14,4)
+local code = read()
+
+-- Part 2, section 1: sending information to servers
+
+rednet.open("back")
+local message = textutils.serialize({"register", username, password, code})
+local protocol = "tomain" -- the message is intended for the main computer
+rednet.broadcast(message, protocol)
+
+ -- Part 2, section 2: waiting for confirmation from server
+
+local noConfirmation = true
+while noConfirmation do
+	event, sendID, returnMessage, distanceTravelled = os.pullEvent("rednet_message")
+	local returnTable = textutils.unserialize(returnMessage)
+	if returnTable[0] == "registerReturn" then
+		noConfirmation = false
+	end
+end
+
+-- Part 2, section 3: reacting to the outcome
+
+if not returnTable[1] then
+	print("There has been an error in handling your request or the username has already been taken.")
+	sleep(3)
+	shell.run("Interfaces/Regiser")
+else
+	print("Your account has been created. Please log in.")
+	sleep(2)
+	os.reboot()
+end
