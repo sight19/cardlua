@@ -1,0 +1,57 @@
+-- Hello there, welcome to the Login part! It is just
+-- a simple program to guide the user through the identification
+-- with the server.
+
+-- To communicate with the server, I use the following server ID's:
+-- login, loginReturn, protocol "tomain"
+
+-- Part 1, section 1: making the GUI:
+
+term.clear()
+term.setCursorPos(1,1)
+print("--==--==--==--==--==--==--")
+print("          LOG IN          ")
+print("  >Username:              ")
+print("   Password:              ")
+
+-- Part 1, section 2: enabling user interaction
+
+term.setCursorPos(14,3)
+local username = read()
+term.clear()
+term.setCursorPos(1,1)
+print("--==--==--==--==--==--==--")
+print("          LOG IN          ")
+print("   Username: " ..username)
+print("  >Password:              ")
+term.setCursorPos(14,4)
+local password = read("*")
+local passCorrect = false
+
+-- Part 2, section 1: setting up Rednet connection to communicate information
+
+rednet.open("back")
+local message = textutils.serialize({"login", username, password})
+local protocol = "tomain" -- the message is intended for the main computer
+rednet.broadcast(message, protocol)
+
+-- Part 2, section 2: waiting for confirmation from server
+
+local noConfirmation = true
+while noConfirmation do
+	event, sendID, returnMessage, distanceTravelled = os.pullEvent("rednet_message")
+	local returnTable = textutils.unserialize(returnMessage)
+	if returnTable[0] == "loginReturn" then
+		noConfirmation = false
+	end
+end
+
+-- Part 2, section 3: reacting on the outcome
+
+if returnTable[1] then
+	print("Yay, logged in!")
+else
+	print("Wrong username/password")
+	sleep(1)
+	shell.run("Interfaces/Login")
+end
