@@ -1,0 +1,95 @@
+-- Hello fellow programmer,
+-- If you are reading this, you are currently reading the first text
+-- that I have wrtitten for my new program. I hope you understand my
+-- code! If you have any questions, advice or feedback, please don't
+-- hesistate to contact me.
+-- Have fun,
+-- Christian
+
+-- This code is specially written for the IC-computer in the hardware
+-- device for the card game. Please refer to the manual for installing
+-- help.
+
+-- Part 1, section 1: defining GUI functions
+
+function mainMenu1()
+	term.clear()
+	term.setCursorPos(1,1)
+	print("--==--==--==--==--==--==--")
+	print("        MAIN  MENU        ")
+	print("  >LOG IN<                ")
+	print("   Register               ")
+	print("   Configuration          ")
+	print("   Exit                   ")
+end
+
+function mainMenu2()
+	term.clear()
+	term.setCursorPos(1,1)
+	print("--==--==--==--==--==--==--")
+	print("        MAIN  MENU        ")
+	print("   Log In                 ")
+	print("  >REGISTER<              ")
+	print("   Configuration          ")
+	print("   Exit                   ")
+end
+
+function mainMenu3()
+	term.clear()
+	term.setCursorPos(1,1)
+	print("--==--==--==--==--==--==--")
+	print("        MAIN  MENU        ")
+	print("   Log In                 ")
+	print("   Register               ")
+	print("  >CONFIGURATION<         ")
+	print("   Exit                   ")
+end
+
+function mainMenu4()
+	term.clear()
+	term.setCursorPos(1,1)
+  print("--==--==--==--==--==--==--")
+	print("        MAIN  MENU        ")
+	print("   Log In                 ")
+	print("   Register               ")
+	print("   Configuration          ")
+	print("  >EXIT<                  ")
+end
+
+function mainMenuChoose(menuItem)
+	if menuItem == 1 then
+		mainMenu1()
+	elseif menuItem == 2 then
+		mainMenu2()
+	elseif menuItem == 3 then
+		mainMenu3()
+	elseif menuItem == 4 then
+		mainMenu4()
+	end
+end
+
+-- Part 1, section 2: making the menu itself (screw Lua, what a relief would a good class-system be)
+
+local param = 0
+local menuItem = 1
+while param ~= 28 do
+	mainMenuChoose(menuItem)
+	sEvent, param = os.pullEvent("key")
+	if (param == 200 and menuItem > 1) then
+		menuItem = menuItem - 1
+	elseif (param == 208 and menuItem < 4) then
+		menuItem = menuItem + 1
+	end
+end
+
+-- Part 2: Directing the user to the correct subroutine
+
+if menuItem == 1 then
+	shell.run("Interfaces/Login")
+elseif menuItem == 2 then
+	shell.run("Interfaces/Register")
+elseif menuItem == 3 then
+	print(3)
+elseif menuItem == 4 then
+	os.reboot()
+end
